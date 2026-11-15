@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LunchPotato | Good Food, Good Mood</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a href="#" class="logo">
+            <img src="/logo.png" alt="" class="brand-mark">
+            <span class="brand-name">LunchPotato<span>.</span></span>
+        </a>
+
+        <div class="location">
+            <span>📍</span>
+            <div>
+                <small>Delivering to</small>
+                <strong>SRM University AP</strong>
+            </div>
+        </div>
+
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#restaurants">Restaurants</a>
+            <a href="#restaurants">Menu</a>
+        </nav>
+
+        <div class="auth-actions" id="auth-buttons">
+            <button class="login-button" onclick="openAuthModal('login')">
+                Login
+            </button>
+
+            <button class="register-button" onclick="openAuthModal('register')">
+                Register
+            </button>
+        </div>
+
+        <div class="user-area" id="user-area" style="display: none;">
+            <span id="user-name"></span>
+
+            <button class="profile-button" onclick="openProfile()">
+                My Profile
+            </button>
+
+            <button class="logout-button" onclick="logout()">
+                Logout
+            </button>
+        </div>
+
+        <button class="cart-button" onclick="toggleCart()">
+            🛒 Cart <span id="cart-count">0</span>
+        </button>
+    </header>
+
+    <main>
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <span class="tag">GOOD FOOD. GOOD MOOD.</span>
+                <h1>Your cravings.<br>Our <span>mission.</span></h1>
+                <p>Discover delicious food from restaurants around you and get it delivered to your doorstep.</p>
+                <a href="#menu" class="primary-button">Explore food →</a>
+            </div>
+
+            <div class="hero-image">
+                <div class="hero-circle">
+                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=900" alt="Delicious pizza">
+                </div>
+                <div class="floating-note">❤️ Made with love</div>
+            </div>
+        </section>
+
+        <section class="section" id="restaurants">
+            <div class="section-heading">
+                <div>
+                    <span class="tag">DISCOVER</span>
+                    <h2>Restaurants near you</h2>
+                </div>
+                <span class="subtext">Explore our restaurants</span>
+            </div>
+
+            <div id="restaurant-list" class="restaurant-grid">
+                <p class="loading">Loading restaurants...</p>
+            </div>
+
+            <div class="restaurant-actions">
+                <button id="toggle-restaurants" class="primary-button" type="button" onclick="toggleRestaurants()"
+                    style="display:none">
+                    View all restaurants
+                </button>
+            </div>
+        </section>
+
+        <section class="section menu-section" id="menu" style="display:none;"></section>
+        <div class="section-heading">
+            <div>
+                <span class="tag">OUR MENU</span>
+                <h2>Find your favourite food</h2>
+            </div>
+        </div>
+
+        <div class="search-container">
+            <input type="text" id="food-search" placeholder="Search for food..." oninput="filterFood()">
+        </div>
+
+        <div id="food-list" class="food-grid">
+            <p class="loading">Loading delicious food...</p>
+        </div>
+        </section>
+    </main>
+
+    <div id="cart-overlay" class="overlay" onclick="closeCart()"></div>
+
+    <aside id="cart-panel" class="cart-panel">
+        <div class="cart-header">
+            <h2>Your Cart 🛒</h2>
+            <button onclick="closeCart()" class="close-button">✕</button>
+        </div>
+
+        <div id="cart-items" class="cart-items">
+            <p>Your cart is empty.</p>
+        </div>
+
+        <div class="cart-footer">
+            <div class="total-row">
+                <strong>Total</strong>
+                <strong id="cart-total">₹0</strong>
+            </div>
+            <button class="checkout-button" onclick="checkout()">
+                Place order →
+            </button>
+        </div>
+    </aside>
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="auth-modal">
+        <div class="auth-card">
+
+            <button class="auth-close" onclick="closeAuthModal()">✕</button>
+
+            <h2 id="auth-title">Welcome Back!</h2>
+            <p id="auth-subtitle">Login to continue with LunchPotato.</p>
+
+            <!-- Login Form -->
+            <form id="login-form" onsubmit="handleLogin(event)">
+
+                <input type="email" id="login-email" placeholder="Email address" required>
+
+                <input type="password" id="login-password" placeholder="Password" required>
+
+                <p id="login-error" class="auth-error"></p>
+
+                <button type="submit" class="auth-submit">
+                    Login
+                </button>
+
+                <p class="auth-switch">
+                    Don't have an account?
+                    <a href="#" onclick="switchAuthMode('register'); return false;">
+                        Register
+                    </a>
+                </p>
+            </form>
+
+            <!-- Registration Form -->
+            <form id="register-form" onsubmit="handleRegister(event)" style="display: none;">
+
+                <input type="text" id="register-name" placeholder="Full name" required>
+
+                <input type="email" id="register-email" placeholder="Email address" required>
+
+                <input type="tel" id="register-phone" placeholder="Phone number" required>
+
+                <input type="text" id="register-address" placeholder="Delivery address" maxlength="500" required>
+
+                <input type="password" id="register-password" placeholder="Password (minimum 8 characters)"
+                    minlength="8" required>
+
+                <p id="register-error" class="auth-error"></p>
+
+                <button type="submit" class="auth-submit">
+                    Create Account
+                </button>
+
+                <p class="auth-switch">
+                    Already have an account?
+                    <a href="#" onclick="switchAuthMode('login'); return false;">
+                        Login
+                    </a>
+                </p>
+            </form>
+
+        </div>
+    </div>
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="profile-modal">
+
+        <div class="profile-card">
+
+            <button class="profile-close" onclick="closeProfile()">✕</button>
+
+            <span class="tag">YOUR ACCOUNT</span>
+            <h2>My Profile 👤</h2>
+            <p class="profile-subtitle">
+                Manage your personal information and orders.
+            </p>
+
+            <!-- Personal Information -->
+            <div class="profile-section">
+
+                <h3>Personal Information</h3>
+
+                <form id="profile-form" onsubmit="saveProfile(event)">
+
+                    <label for="profile-name">Full Name</label>
+                    <input type="text" id="profile-name" minlength="2" maxlength="100" required>
+
+                    <label for="profile-email">Email Address</label>
+                    <input type="email" id="profile-email" readonly>
+
+                    <label for="profile-phone">Phone Number</label>
+                    <input type="tel" id="profile-phone" pattern="[0-9]{10}" maxlength="10" minlength="10" required>
+
+                    <label for="profile-address">Delivery Address</label>
+                    <textarea id="profile-address" minlength="5" maxlength="500" required></textarea>
+
+                    <p id="profile-error" class="auth-error"></p>
+
+                    <button type="submit" class="auth-submit">
+                        Save Changes
+                    </button>
+
+                </form>
+
+            </div>
+
+            <!-- Order History -->
+            <div class="profile-section">
+
+                <h3>My Orders 📦</h3>
+
+                <div id="profile-orders">
+                    <p>Loading your orders...</p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- RESTAURANT OWNER DASHBOARD -->
+    <section id="owner-dashboard" class="owner-dashboard" style="display:none;">
+
+        <div class="owner-header">
+            <div>
+                <h1>Restaurant Dashboard</h1>
+                <p>Manage your restaurant, menu and orders.</p>
+            </div>
+
+            <button onclick="refreshOwnerDashboard()" class="primary-button">
+                Refresh Dashboard
+            </button>
+        </div>
+
+        <div class="owner-section">
+            <h2>My Restaurants</h2>
+            <div id="owner-restaurants">
+                Loading restaurants...
+            </div>
+        </div>
+
+        <div class="owner-section">
+            <h2>Add Food Item</h2>
+
+            <form id="owner-food-form" onsubmit="addOwnerFood(event)">
+
+                <label>Restaurant</label>
+                <select id="owner-restaurant-select" required>
+                    <option value="">Select restaurant</option>
+                </select>
+
+                <label>Food Name</label>
+                <input id="owner-food-name" type="text" required maxlength="100">
+
+                <label>Description</label>
+                <textarea id="owner-food-description" maxlength="500"></textarea>
+
+                <label>Price (₹)</label>
+                <input id="owner-food-price" type="number" min="0.01" step="0.01" required>
+
+                <label>Availability</label>
+                <select id="owner-food-available">
+                    <option value="true">Available</option>
+                    <option value="false">Unavailable</option>
+                </select>
+
+                <label for="owner-food-image">Food Picture (JPG, PNG, or GIF; max 5 MB)</label>
+                <input id="owner-food-image" type="file" accept="image/jpeg,image/png,image/gif" required>
+
+                <button type="submit" class="primary-button">
+                    Add Food Item
+                </button>
+
+            </form>
+        </div>
+
+        <div class="owner-section">
+            <h2>Manage Menu</h2>
+            <div id="owner-menu">Loading menu...</div>
+        </div>
+
+        <div class="owner-section">
+            <h2>Incoming Orders</h2>
+            <div id="owner-orders">Loading orders...</div>
+        </div>
+
+    </section>
+    <!-- ADMIN DASHBOARD -->
+    <section id="admin-dashboard" class="owner-dashboard" style="display:none;">
+
+        <div class="owner-header">
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p>Manage LunchPotato platform.</p>
+            </div>
+
+            <button class="primary-button" onclick="refreshAdminDashboard()">
+                Refresh Dashboard
+            </button>
+        </div>
+
+        <div class="owner-section">
+            <h2>Platform Overview</h2>
+            <div class="admin-stats">
+                <div class="owner-card">
+                    <h3>Total Users</h3>
+                    <p id="admin-total-users">0</p>
+                </div>
+                <div class="owner-card">
+                    <h3>Total Restaurants</h3>
+                    <p id="admin-total-restaurants">0</p>
+                </div>
+                <div class="owner-card">
+                    <h3>Total Orders</h3>
+                    <p id="admin-total-orders">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="owner-section">
+            <h2>Add New Restaurant</h2>
+
+            <form id="admin-restaurant-form" onsubmit="addRestaurant(event)">
+                <label>Restaurant Name</label>
+                <input id="new-restaurant-name" type="text" placeholder="Enter restaurant name" required>
+
+                <label>Restaurant Address</label>
+                <input id="new-restaurant-address" type="text" placeholder="Enter full restaurant address" required>
+
+                <label>Rating (optional)</label>
+                <input id="new-restaurant-rating" type="number" min="0" max="5" step="0.1" placeholder="0 to 5">
+
+                <label for="new-restaurant-logo">Restaurant Logo (JPG, PNG, or GIF; max 5 MB)</label>
+                <input id="new-restaurant-logo" type="file" accept="image/jpeg,image/png,image/gif" required>
+
+
+                <label class="checkbox-label">
+                    <input id="new-restaurant-open" type="checkbox" checked>
+                    <span>Restaurant is open</span>
+                </label>
+
+
+                <button type="submit" class="primary-button">
+                    Add Restaurant
+                </button>
+            </form>
+        </div>
+
+        <div class="owner-section">
+            <h2>Restaurant Management</h2>
+            <div id="admin-restaurants">Loading restaurants...</div>
+        </div>
+
+        <div class="owner-section">
+            <h2>Assign Restaurant Owner</h2>
+
+            <form id="admin-owner-form" onsubmit="assignRestaurantOwner(event)">
+
+                <label>Restaurant</label>
+                <select id="admin-restaurant-select" required>
+                    <option value="">Select restaurant</option>
+                </select>
+
+                <label>Existing User Email</label>
+                <input id="admin-owner-email" type="email" placeholder="owner@example.com" required>
+
+                <button type="submit" class="primary-button">
+                    Assign Owner
+                </button>
+
+            </form>
+        </div>
+
+    </section>
+    <div id="notification" class="notification"></div>
+    <section id="order-success" class="success-page">
+        <div class="success-card">
+            <div class="success-icon">✓</div>
+            <h1>Order placed successfully!</h1>
+            <p>Your delicious food is getting ready.</p>
+
+            <div class="order-details">
+                <p>Order ID: <strong id="success-order-id"></strong></p>
+                <p>Status: <strong id="success-order-status"></strong></p>
+                <p>Total: <strong id="success-order-total"></strong></p>
+            </div>
+
+            <button onclick="closeSuccess()" class="primary-button">
+                Continue shopping
+            </button>
+        </div>
+    </section>
+
+    <footer>
+        <a href="#" class="logo">
+            <img src="/logo.png" alt="" class="brand-mark">
+            <span class="brand-name">LunchPotato<span>.</span></span>
+        </a>
+        <p>Good food brings people together.</p>
+        <small>© 2026 LunchPotato. All rights reserved.</small>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
